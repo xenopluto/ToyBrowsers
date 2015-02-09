@@ -1,8 +1,12 @@
+package hj.browser.core.dom;
+
+
 import java.util.HashMap;
 import java.util.Vector;
 
 
 public class Element extends Node {
+	
 	String tag_name;
 	HashMap<String, String> attributes;
 	
