@@ -10,10 +10,10 @@ import java.util.Vector;
 
 public class Parser {
 	
-	int pos;
+	public int pos;
 	String input;
 	
-	private Parser() {
+	public Parser() {
 		pos = 0;
 	}
 	
@@ -22,23 +22,25 @@ public class Parser {
 		this.input = data;
 	}
 	
-	private char nextChar() {
+	public int getPos() { return pos; }
+	
+	public char nextChar() {
 		return input.charAt(pos);
 	}
 	
-	private boolean startsWith(String str) {
+	public boolean startsWith(String str) {
 		return input.startsWith(str, pos);
 	}
 	
-	private boolean isEOF() {
+	public boolean isEOF() {
 		return pos >= input.length();
 	}
 	
-	private char consumeChar() {
+	public char consumeChar() {
 		return input.charAt(pos++);
 	}
 	
-	private String consumeWhile(Comparator<Character> c) {
+	public String consumeWhile(Comparator<Character> c) {
 		StringBuilder result = new StringBuilder();
 		while(!isEOF() && c.matches(nextChar())) {
 			result.append(consumeChar());
@@ -46,7 +48,7 @@ public class Parser {
 		return result.toString();
 	}
 	
-	private void consumeWhitespace() {
+	public void consumeWhitespace() {
 		class WhitespaceComparator implements Comparator<Character> {
 			
 			char[] whitespaceCharacters = {' ', '\n', '\t'};
@@ -65,7 +67,7 @@ public class Parser {
 		consumeWhile(new WhitespaceComparator());
 	}
 	
-	private String parseTagName() {
+	public String parseTagName() {
 		class TagNameComparator implements Comparator<Character> {
 
 			@Override
@@ -78,7 +80,7 @@ public class Parser {
 		return consumeWhile(new TagNameComparator());
 	}
 	
-	private Node parseNode() {
+	public Node parseNode() {
 		Node result;
 		
 		if (nextChar() == '<') result = parseElement();
@@ -87,7 +89,7 @@ public class Parser {
 		return result;
 	}
 
-	private Node parseText() {
+	public Node parseText() {
 		class TagComparator implements Comparator<Character> {
 
 			@Override
@@ -99,26 +101,26 @@ public class Parser {
 		return new Text(consumeWhile(new TagComparator()));
 	}
 
-	private Node parseElement() {
+	public Node parseElement() {
 		// Opening Tag
 		assert(consumeChar() == '<');
 		String tagName = parseTagName();
 		HashMap<String, String> attrs = parseAttributes();
-		assert!(consumeChar() == '>');
+		assert(consumeChar() == '>');
 		
 		// Contents
 		Vector<Node> children = parseNodes();
 		
 		// Closing Tag
-		assert!(consumeChar() == '<');
-		assert!(consumeChar() == '/');
-		assert!(parseTagName() == tagName);
-		assert!(consumeChar() == '>');
+		assert(consumeChar() == '<');
+		assert(consumeChar() == '/');
+		assert(parseTagName().compareTo(tagName) == 0);
+		assert(consumeChar() == '>');
 		
 		return new Element(tagName, attrs, children);
 	}
 
-	private String parseAttrValue() {
+	public String parseAttrValue() {
 		class CharacterNotComparator implements Comparator<Character> {
 
 			private Character source;
@@ -137,13 +139,13 @@ public class Parser {
 		}
 
 		char openQuote = consumeChar();
-		assert!(openQuote == '"' || openQuote == '\'');
+		assert(openQuote == '"' || openQuote == '\'');
 		String value = consumeWhile(new CharacterNotComparator(openQuote));
-		assert!(consumeChar() == openQuote);
+		assert(consumeChar() == openQuote);
 		return value;
 	}
 	
-	private HashMap<String, String> parseAttributes() {
+	public HashMap<String, String> parseAttributes() {
 		HashMap<String, String> attributes = new HashMap<String, String>();
 		while(true) {
 			consumeWhitespace();
@@ -151,14 +153,14 @@ public class Parser {
 				break;
 			}
 			String tagName = parseTagName();
-			assert!(consumeChar() == '=');
+			assert(consumeChar() == '=');
 			String value = parseAttrValue();
 			attributes.putIfAbsent(tagName, value);
 		}
 		return attributes;
 	}
 	
-	private Vector<Node> parseNodes() {
+	public Vector<Node> parseNodes() {
 		Vector<Node> nodes = new Vector<Node>();
 		while(true) {
 			consumeWhitespace();

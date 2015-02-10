@@ -15,4 +15,9 @@ public class Element extends Node {
 		this.attributes = attrs;
 		super.children = children; 
 	}
+
+	@Override
+	protected void printMe() {
+		System.out.println(this.tag_name);
+	}
 }

@@ -12,4 +12,9 @@ public class Text extends Node {
 		super.children = new Vector<Node>();
 		this.data = data;
 	}
+
+	@Override
+	protected void printMe() {
+		System.out.println("Text: " + this.data);
+	}
 }
